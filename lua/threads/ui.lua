@@ -3,7 +3,7 @@
 ---@field win number|nil
 ---@field open_window function
 
-PopUp = {}
+local PopUp = {}
 PopUp.__index = PopUp
 
 ---@return  PopUp
@@ -55,3 +55,4 @@ function PopUp:open_window(thread)
 	end
 	vim.api.nvim_buf_set_lines(self.buf, 0, -1, false, text_lines)
 end
+return PopUp
