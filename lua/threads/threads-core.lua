@@ -1,3 +1,4 @@
+local data = require("threads.data")
 local utils = require("threads.utils")
 
 ---@class Thread
@@ -35,6 +36,7 @@ Thread.__index = Thread -- set a metatable to support methods
 -- Thread contstructor
 ---@return Thread
 function Thread.new(thread_name)
+	data.create_thread_data_file()
 	local self = setmetatable({}, Thread)
 	self.name = thread_name
 	self.count = 0
