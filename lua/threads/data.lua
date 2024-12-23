@@ -1,7 +1,5 @@
 local Path = require("plenary.path")
 
---{"thread_1": [{"filename": "foo.py"}, {"filename": "bazz.py"}]}
-
 local M = {}
 
 M.data_path = string.format("%s/threads", vim.fn.stdpath("data"))
@@ -60,4 +58,23 @@ function M.write_thread_data(thread)
 	path:write(content, "w")
 end
 
+--[[ 
+	I need a function that can read the data file and find the json
+	object that represents the thread specified. 
+	This means that the function needs to take the thread name as an argument.
+	It then needs to take that json object and instantiate a thread class loaded 
+	with the data from the json object. 
+	It then needs to create a thread session with the newly instantiated thread class.
+--]]
+
+function M.get_thread(thread_name)
+	local full_data_path = M.get_data_file_path()
+	local data = M.get_threads_data(full_data_path)
+	local thread_data = data[thread_name]
+	if thread_data == nil then
+		error("No thread with name " .. thread_name)
+	end
+	-- P(thread_data)
+	return thread_data
+end
 return M
