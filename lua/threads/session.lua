@@ -1,13 +1,11 @@
 local Thread = require("threads.threads-core")
-local PopUp = require("threads.ui")
+local PopUp = require("threads.session_ui")
 local move = require("threads.move")
 local data = require("threads.data")
 
 local M = {}
 
-M.opts = { add_mark = "am", open_window = "oo", open_previewer = "op", move_backward = "bb", move_forward = "mf", save_thread = "st" }
-
-P(M.opts)
+M.opts = { add_mark = "am", open_previewer = "op", move_backward = "bb", move_forward = "mf", save_thread = "st" }
 
 function M.create_thread_session(thread)
 	vim.keymap.set("n", "<leader>" .. M.opts.add_mark, function()
@@ -23,9 +21,6 @@ function M.create_thread_session(thread)
 	end, { noremap = true })
 
 	local popUp = PopUp.new()
-	vim.keymap.set("n", "<leader>" .. M.opts.open_window, function()
-		popUp:open_window(thread)
-	end, { noremap = true })
 
 	vim.keymap.set("n", "<leader>" .. M.opts.open_previewer, function()
 		popUp:open_previewer(thread)
@@ -41,10 +36,7 @@ function M.load_thread_session(thread_name)
 	local thread_data = data.get_thread(thread_name)
 	thread:load(thread_data)
 	M.create_thread_session(thread)
-	P(thread)
 end
-
--- M.load_thread_session("yo-yo")
 
 function M.create_new_thread_session(command)
 	local thread = Thread.new(command.args)

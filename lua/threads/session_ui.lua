@@ -49,6 +49,7 @@ function PopUp:open_previewer(thread)
 			actions.select_default:replace(function()
 				actions.close(prompt_bufnr)
 				local selection = action_state.get_selected_entry()
+				move.update_window(selection.filename)
 				vim.api.nvim_win_set_cursor(0, { selection.value.line_number, selection.value.column })
 			end)
 			return true

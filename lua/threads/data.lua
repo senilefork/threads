@@ -39,6 +39,26 @@ function M.add_thread(thread_name)
 	path:write(content, "w")
 end
 
+function M.get_threads()
+	local full_data_path = M.get_data_file_path()
+	local path = Path:new(full_data_path)
+	local file_content = path:read()
+	--- does lua have generators?
+	data = vim.json.decode(path:read())
+	threads = {}
+	for name, data in pairs(data) do
+		for _, value in ipairs(data) do
+			--- maybe copy instead of mutating
+			if value.thread_index == 1 then
+				value.name = name
+				table.insert(threads, value)
+			end
+		end
+	end
+	return threads
+end
+
+
 function M.get_threads_data(filepath)
 	local path = Path:new(filepath)
 	local file_content = path:read()
@@ -74,7 +94,6 @@ function M.get_thread(thread_name)
 	if thread_data == nil then
 		error("No thread with name " .. thread_name)
 	end
-	-- P(thread_data)
 	return thread_data
 end
 return M
