@@ -9,6 +9,7 @@ local previewer = require('telescope.config').values.grep_previewer
 local Thread = require("threads.threads-core")
 local data = require("threads.data")
 local move = require("threads.move")
+local session = require("threads.session")
 
 ---@class PopUp
 ---@field buf number|nil
@@ -26,30 +27,30 @@ function PopUp.new()
 	return self
 end
 
----@return nil
-function PopUp:open_previewer(thread)
+function PopUp:open_threads_window()
+	threads = data.get_threads()
 	opts = opts or {}
 	pickers.new(opts, {
-		prompt_title = 'marks',
+		prompt_title = '...Thread name...',
 		finder = finders.new_table {
-		      results = thread.marks,
+		      results = threads,
 		      entry_maker = function(entry)
 			return {
 			  value = entry,
-			  display = entry.filename,
-			  ordinal = tostring(entry.thread_index),
+			  display = entry.name,
+			  ordinal = entry.name,
 			  filename = entry.filename,
-		          lnum = entry.line_number,
 			}
 		      end
 		    },
 		sorter = conf.generic_sorter(opts),
-		previewer = previewer(opts),
 		attach_mappings = function(prompt_bufnr, map)
 			actions.select_default:replace(function()
 				actions.close(prompt_bufnr)
 				local selection = action_state.get_selected_entry()
+				move.update_window(selection.filename)
 				vim.api.nvim_win_set_cursor(0, { selection.value.line_number, selection.value.column })
+				session.load_thread_session(selection.display)
 			end)
 			return true
 		end,

@@ -1,7 +1,5 @@
 local Path = require("plenary.path")
 
---{"thread_1": [{"filename": "foo.py"}, {"filename": "bazz.py"}]}
-
 local M = {}
 
 M.data_path = string.format("%s/threads", vim.fn.stdpath("data"))
@@ -41,6 +39,26 @@ function M.add_thread(thread_name)
 	path:write(content, "w")
 end
 
+function M.get_threads()
+	local full_data_path = M.get_data_file_path()
+	local path = Path:new(full_data_path)
+	local file_content = path:read()
+	--- does lua have generators?
+	data = vim.json.decode(path:read())
+	threads = {}
+	for name, data in pairs(data) do
+		for _, value in ipairs(data) do
+			--- maybe copy instead of mutating
+			if value.thread_index == 1 then
+				value.name = name
+				table.insert(threads, value)
+			end
+		end
+	end
+	return threads
+end
+
+
 function M.get_threads_data(filepath)
 	local path = Path:new(filepath)
 	local file_content = path:read()
@@ -60,4 +78,22 @@ function M.write_thread_data(thread)
 	path:write(content, "w")
 end
 
+--[[ 
+	I need a function that can read the data file and find the json
+	object that represents the thread specified. 
+	This means that the function needs to take the thread name as an argument.
+	It then needs to take that json object and instantiate a thread class loaded 
+	with the data from the json object. 
+	It then needs to create a thread session with the newly instantiated thread class.
+--]]
+
+function M.get_thread(thread_name)
+	local full_data_path = M.get_data_file_path()
+	local data = M.get_threads_data(full_data_path)
+	local thread_data = data[thread_name]
+	if thread_data == nil then
+		error("No thread with name " .. thread_name)
+	end
+	return thread_data
+end
 return M

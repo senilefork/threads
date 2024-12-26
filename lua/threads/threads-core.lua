@@ -44,6 +44,14 @@ function Thread.new(thread_name)
 	self.active_mark = nil
 	return self
 end
+
+---@return nil
+function Thread:load(data)
+	self.count = #data
+	self.marks = data
+	self.active_mark = data[1]
+end
+
 ---@return nil
 function Thread:add_mark()
 	local filename, line_number, column = unpack(utils.get_curr_window_info())
